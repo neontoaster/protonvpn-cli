@@ -430,7 +430,7 @@ function openvpn_disconnect() {
       if [[ $(is_openvpn_currently_running) == false ]]; then
         modify_dns revert_to_backup # Reverting to original DNS entries
         disconnected=true
-        # killswitch disable # Disabling killswitch
+        killswitch disable # Disabling killswitch
         cp "$(get_protonvpn_cli_home)/.connection_config_id" "$(get_protonvpn_cli_home)/.previous_connection_config_id" 2> /dev/null
         cp "$(get_protonvpn_cli_home)/.connection_selected_protocol" "$(get_protonvpn_cli_home)/.previous_connection_selected_protocol" 2> /dev/null
         rm -f  "$(get_protonvpn_cli_home)/.connection_config_id" "$(get_protonvpn_cli_home)/.connection_selected_protocol" 2> /dev/null
@@ -466,7 +466,7 @@ function openvpn_connect() {
 
   modify_dns backup # Backing-up current DNS entries.
   manage_ipv6 disable # Disabling IPv6 on machine.
-  # killswitch backup_rules # Backing-up firewall rules.
+  killswitch backup_rules # Backing-up firewall rules.
 
   config_id=$1
   selected_protocol=$2
@@ -518,7 +518,7 @@ function openvpn_connect() {
           modify_dns to_protonvpn_dns # Use ProtonVPN DNS server.
         fi
 
-        # killswitch enable # Enable killswitch
+        killswitch enable # Enable killswitch
 
         echo "$config_id" > "$(get_protonvpn_cli_home)/.connection_config_id"
         echo "$selected_protocol" > "$(get_protonvpn_cli_home)/.connection_selected_protocol"
