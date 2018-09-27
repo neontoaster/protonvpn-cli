@@ -729,6 +729,8 @@ function killswitch() {
       vpn_port=$(get_openvpn_config_info | cut -d "@" -f2)
       vpn_type=$(get_openvpn_config_info | cut -d "@" -f3)
       vpn_device_name=$(get_openvpn_config_info | cut -d "@" -f4)
+      lan_subnet=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}')
+
       iptables -F
       iptables -P INPUT DROP
       iptables -P OUTPUT DROP
@@ -740,6 +742,11 @@ function killswitch() {
       iptables -A OUTPUT -o "$vpn_device_name" -m state --state ESTABLISHED,RELATED -j ACCEPT
       iptables -A OUTPUT -p "$vpn_type" -m "$vpn_type" --dport "$vpn_port" -j ACCEPT
       iptables -A INPUT -p "$vpn_type" -m "$vpn_type" --sport "$vpn_port" -j ACCEPT
+
+      iptables -A INPUT -i lo -j ACCEPT
+      iptables -A OUTPUT -o lo -j ACCEPT
+      iptables -A INPUT -s "$lan_subnet" -j ACCEPT
+      iptables -A OUTPUT -d "$lan_subnet" -j ACCEPT
 
     elif [[ $(detect_platform_type) == "MacOS" ]]; then
      # Todo: logic
